@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文件下载</title>
+</head>
+
+<body>
+  <section>
+    <div class="header">
+      <div class="search">
+        <form action="" method="get">
+          <input type="text" name="keyword" placeholder="请输入关键字">
+        </form>
+      </div>
+      <div class="upload">
+        <form action="" method="post" enctype="multipart/form-data">
+          <input type="file" name="files" id="file" multiple {{ if not .Upload}} disabled {{ end }} />
+          <input type="submit" value="上传" {{ if not .Upload}} disabled {{ end }} />
+        </form>
+      </div>
+    </div>
+    <div class="filelist">
+      <div class="file" id="th">
+        <a id="th-Name">文件名</a>
+        <span class="type" id="th-Type">类型</span>
+        <span class="path" id="th-Path">路径</span>
+        <span class="time" id="th-ModTime">时间</span>
+        <span class="size" id="th-Size">大小</span>
+      </div>
+      <div class="file">
+        <a href="#!" onclick="back()">..</a>
+        <span class="type">-</span>
+        <span class="path">-</span>
+        <span class="time">-</span>
+        <span class="size">-</span>
+      </div>
+      <div class="list" id="list">
+
+      </div>
+    </div>
+    {{ if .Upload }}
+    <div class="drop-area" id="drop-area">
+      <div class="drop-area-inner">
+        <div class="drop-area-text">
+          <h1>松开上传文件</h1>
+          <h3>支持多文件上传</h3>
+        </div>
+      </div>
+      <div class="mask"></div>
+    </div>
+    {{ end }}
+  </section>
+  <script>
+    function loadResouce(type, content) {
+      const ele = document.createElement(type)
+      ele.textContent = content
+      document.body.appendChild(ele)
+    }
+    loadResouce("style", "{{ .Style }}")
+    loadResouce("script", "{{ .Script }}")
+
+    const files = JSON.parse("{{ .JsonFiles }}")
+    console.log(files)
+    window.onload = function () {
+      const fastClient = new FastClient(files, document.getElementById("list"))
+      fastClient.render()
+      const keys = ["Name", "Type", "Path", "ModTime", "Size"]
+      keys.forEach(item => {
+        document.getElementById("th-" + item).onclick = function () {
+          fastClient.sortBy(item)
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
